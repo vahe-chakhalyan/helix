@@ -14,8 +14,8 @@ class GrabData extends Command
 {
     const NEWS_URL = 'http://www.tert.am/am/news/';
     const BASE_URL = 'http://www.tert.am';
-    const PAGES_COUNT = 100;
     const IMAGES_PATH = 'news_images';
+    const ARTICLES_COUNT = 1000;
 
     /**
      * The name and signature of the console command.
@@ -53,10 +53,14 @@ class GrabData extends Command
         $this->create_images_folder(self::IMAGES_PATH);
         Article::truncate();
 
-        for ($page = 1; $page <= self::PAGES_COUNT; $page++) {
+        $page = 1;
+        $articles_count = 0;
+
+        while (true) {
             $this->console_log('Get News List For Page ' . $page, 'green');
             $this->console_log(self::NEWS_URL . $page, null, null, 'underlined');
             $news_list_page = $this->execute_curl(self::NEWS_URL . $page);
+
             if (empty($news_list_page['error'])) {
                 $dom = $this->get_dom($news_list_page['result']);
                 $short_news_array = $this->get_short_news($dom);
@@ -67,18 +71,25 @@ class GrabData extends Command
 
                     if ($article_data) {
                         Article::create($article_data);
+                        $articles_count++;
+                        if ($articles_count == self::ARTICLES_COUNT) {
+                            $this->console_log('Ended Grabbing Data From www.tert.am', null, 'blue', 'bold');
+                            return false;
+                        }
                     }
                 }
             } else {
                 $this->console_log($news_list_page['error'], 'red');
                 $this->log_error($news_list_page['error']);
             }
+
+            $page++;
         }
 
-        $this->console_log('Ended Grabbing Data From www.tert.am');
+        return false;
     }
 
-    private function get_image($content)
+    private function store_image($content)
     {
         $image_src = $content->getElementsByTagName('img')->item(0)->getAttribute("src");
         $filename = basename($image_src);
@@ -91,7 +102,7 @@ class GrabData extends Command
     {
 
         $article_attributes = [];
-        $article_attributes['title'] = $single->getElementsByTagName('h4')->item(0)->nodeValue;
+        $article_attributes['title'] = trim($single->getElementsByTagName('h4')->item(0)->nodeValue);
         $article_attributes['url'] = $single->getElementsByTagName('a')->item(0)->getAttribute('href');
 
         $time = trim(explode('•', $single->getElementsByTagName('p')->item(0)->nodeValue)[0]);
@@ -113,7 +124,7 @@ class GrabData extends Command
         if (empty($article_page['error'])) {
             $dom = $this->get_dom($article_page['result']);
             $content = $dom->getElementById('i-content');
-            $image_path = $this->get_image($content);
+            $image_path = $this->store_image($content);
 
             $paragraphs = $content->getElementsByTagName('p');
             $description = '';
@@ -121,7 +132,7 @@ class GrabData extends Command
                 $description .= $paragraph->textContent . PHP_EOL;
             }
 
-            $article_attributes['description'] = $description;
+            $article_attributes['description'] = trim($description);
             $article_attributes['image_url'] = $image_path;
 
             return $article_attributes;
@@ -132,21 +143,6 @@ class GrabData extends Command
 
             return false;
         }
-    }
-
-    public function load_image($image_url)
-    {
-        // TODO : ...
-        $file_name = uniqid();
-        $full_path = storage_path('app/public/') . $file_name;
-        $ch = curl_init($image_url);
-        $fp = fopen($full_path, 'wb');
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-        return url('/storage') . '/' . $file_name;
     }
 
     public function get_short_news($dom)
@@ -185,7 +181,7 @@ class GrabData extends Command
 
     public function console_log($string = null, $color = null, $background = null, $style = null)
     {
-        echo terminal_style($string, $color, $background, $style) . PHP_EOL ;
+        echo terminal_style($string, $color, $background, $style) . PHP_EOL;
     }
 
     public function create_images_folder($path)

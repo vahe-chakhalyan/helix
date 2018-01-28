@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class ArticlesController extends Controller
 {
 
     protected $records_per_page = 10;
+    protected $images_path = 'news_images';
 
     /**
      * Display a listing of the resource.
@@ -40,7 +42,24 @@ class ArticlesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'title' => 'required',
+            'description' => 'required',
+            'date' => 'required|date_format:"Y-m-d H:i"',
+            'image' => 'required|image',
+            'url' => 'required|url',
+        ];
+
+        $request->validate($rules);
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $filename = Article::store_image($request->file('image'));
+            $data['image_url'] = env('APP_URL') . '/' . $this->images_path . '/' . $filename;
+        }
+
+        Article::create($data);
+        return redirect()->route('articles.index');
     }
 
     /**
@@ -64,7 +83,7 @@ class ArticlesController extends Controller
     public function edit($id)
     {
         $article = Article::findOrFail($id);
-        return view('articles.edit',compact('article'));
+        return view('articles.edit', compact('article'));
     }
 
     /**
@@ -76,7 +95,35 @@ class ArticlesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $article = Article::findOrFail($id);
+        $rules = [
+            'title' => 'required',
+            'description' => 'required',
+            'date' => 'required|date_format:"Y-m-d H:i"',
+            'url' => 'required|url',
+        ];
+
+        if ($request->has('image')) {
+            $rules['image'] = 'image';
+        }
+        $request->validate($rules);
+        $data = $request->all();
+
+        if ($request->hasFile('image')) {
+            $article->remove_image();
+            $filename = Article::store_image($request->file('image'));
+
+            $article->image_url = env('APP_URL') . '/' . $this->images_path . '/' . $filename;
+        }
+
+        $article->title = $data['title'];
+        $article->description = $data['description'];
+        $article->date = $data['date'];
+        $article->url = $data['url'];
+
+        $article->saveOrFail();
+        return redirect()->route('articles.index');
+
     }
 
     /**

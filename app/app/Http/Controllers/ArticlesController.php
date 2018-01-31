@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Article;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 
 class ArticlesController extends Controller
 {
@@ -45,7 +44,7 @@ class ArticlesController extends Controller
         $rules = [
             'title' => 'required',
             'description' => 'required',
-            'date' => 'required|date_format:"Y-m-d H:i"',
+            'date' => 'required|date_format:"Y-m-d H:i:s"',
             'image' => 'required|image',
             'url' => 'required|url',
         ];
@@ -99,7 +98,7 @@ class ArticlesController extends Controller
         $rules = [
             'title' => 'required',
             'description' => 'required',
-            'date' => 'required|date_format:"Y-m-d H:i"',
+            'date' => 'required|date_format:"Y-m-d H:i:s"',
             'url' => 'required|url',
         ];
 

@@ -1,7 +1,7 @@
-@extends('layouts.sole')
+@extends('layouts.main')
 
 @section('content')
-    <div class="container-fluid" style="margin-top: 90px">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12">
                 <h1>Edit Article</h1>
@@ -57,11 +57,19 @@
                     </div>
 
 
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6 col-md-4">
+                            <div class="form-group">
+                                <img id="imgPreview" src="{{ $article->image_url }}" alt="Article image"
+                                     class="img-responsive img-thumbnail"/>
+                            </div>
+                        </div>
+                    </div>
                     <div class="form-group {{ $errors->has('image') ? ' has-error' : '' }}">
                         <label for="image">Image</label>
                         <div>
                             <label class="btn-bs-file btn btn-default">
-                                <input name="image" type="file" accept=".jpg, .jpeg, .png">
+                                <input name="image" type="file" class="upload-file" accept=".jpg, .jpeg, .png">
                             </label>
                         </div>
                         @if ($errors->has('image'))

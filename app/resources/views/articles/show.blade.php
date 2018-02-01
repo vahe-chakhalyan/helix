@@ -1,37 +1,20 @@
-@extends('layouts.sole')
+@extends('layouts.main')
 
 @section('content')
 
-    <div class="container" style="margin-top: 90px">
+    <div class="container">
         <div class="row">
-            <div class="col-xs-12">
-                <h1>
-                    {{ $article->title }}
-                    <button type="button" class="btn btn-danger btn-sm delete-article"
-                            data-article-id="{{ $article->id }}">
-                        <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                    <a href="/articles/{{$article->id}}/edit" class="btn btn-primary btn-sm">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                    </a>
-                </h1>
+            <div class="col-sm-4"><a href="/articles/{{ $article->id }}" class=""><img
+                            src="{{ $article->image_url }}" class="img-responsive"></a>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12" style="float: left">
-                <img src="{{ $article->image_url }}"
-                     style="float: left; margin: 0 14px 7px 0;">
-                <p style="font-size: 10px">
-                    {{ $article->date }}
-                </p>
+            <div class="col-sm-8">
+                <a href="/articles/{{ $article->id }}"><h3 class="title">{{ $article->title }}</h3></a>
 
+                <span class="glyphicon glyphicon-calendar">{{ $article->date }}</span>
                 <p>
                     {{ $article->description }}
                 </p>
-            </div>
-
-            <div class="col-xs-12">
-                <a target="_blank" href="{{ $article->url }}">Original source</a>
+                <p class="text-muted">Original source: <a target="_blank" href="{{ $article->url }}">www.tert.am</a></p>
             </div>
         </div>
     </div>

@@ -1,14 +1,7 @@
-@extends('layouts.sole')
+@extends('layouts.main')
 
 @section('content')
-    <div class="container-fluid" style="margin-top: 90px">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1>Edit Article</h1>
-                <hr>
-            </div>
-        </div>
-
+    <div class="container-fluid">
         <div class="row">
             <div class="col-xs-12 col-sm-6 ">
                 <form method="POST" action="/articles" id="edit-article" enctype="multipart/form-data">
@@ -25,7 +18,8 @@
                     <div class="form-group  {{ $errors->has('description') ? ' has-error' : '' }}">
                         <label for="description">Description:</label>
                         <textarea class="form-control" id="description" placeholder="Enter description"
-                                  name="description" rows="15">{{ old('description') ? old('description') : '' }}</textarea>
+                                  name="description"
+                                  rows="15">{{ old('description') ? old('description') : '' }}</textarea>
                         @if ($errors->has('description'))
                             <span class="error help-block">{{ $errors->first('description') }}</span>
                         @endif
@@ -38,7 +32,8 @@
                         <span class="input-group-addon">
                           <span class="glyphicon glyphicon-calendar"></span>
                         </span>
-                            <input name="date" type="text" id="datetimepicker" class="form-control" value="{{ old('date') ? old('date') : '' }}"/>
+                            <input name="date" type="text" id="datetimepicker" class="form-control"
+                                   value="{{ old('date') ? old('date') : '' }}"/>
                         </div>
 
                         @if ($errors->has('date'))
@@ -69,7 +64,6 @@
                         </span>
                         @endif
                     </div>
-
 
 
                     <div class="col-xs-12 text-right">

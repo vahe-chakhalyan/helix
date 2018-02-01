@@ -8,8 +8,8 @@ Grab data from tert.am
 ### Installing
 In app folder run commands
 
- `composer install`
- `php artisan migrate`
- `php artisan command:grab_data`
- `npm i`
- `npm run prod`
+1. `composer install`
+2. `php artisan migrate`
+3. `php artisan command:grab_data`
+4. `npm i`
+5. `npm run prod`
